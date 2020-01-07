@@ -9,22 +9,30 @@
 		<table border = "1" id = "p1vGV9Ip">
 			<tr>
 				<td>データ入力欄</td>
-				<td><textarea id = "o0wW1dZt">2, 3, 3, 3, 3, 3, 3, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 6, 6, 6, 6, 6, 6, 7</textarea></td>
+				<td><textarea id = "o0wW1dZt">79.008, 79.038, 79.006, 79.04, 79.023, 79.018, 79.011, 78.995, 79.006, 78.999, 79.004, 79.006, 79.005, 79.008, 79.006, 79.008, 79.006, 78.996, 78.999, 79.007, 79.014, 78.987, 78.993, 78.995, 79.005, 79.006, 79.008, 79.005, 79.002, 78.997</textarea></td>
 			</tr>
 			<tr>
 				<td>上限規格(USL)</td>
-				<td><input id = "LkpAPpSF" placeholder = "USL" type = "number" value = "9" /></td>
+				<td><input id = "LkpAPpSF" min = "0" placeholder = "USL" step = "0.001" type = "number" value = "79.05" /></td>
 			</tr>
 			<tr>
 				<td>下限規格(LSL)</td>
-				<td><input id = "uSVk70ah" placeholder = "LSL" type = "number" value = "0" /></td>
+				<td><input id = "uSVk70ah" min = "0" placeholder = "LSL" step = "0.001" type = "number" value = "78.97" /></td>
 			</tr>
 			<tr>
 				<td>データの間隔</td>
-				<td><input id = "ZWX7XxxQ" type = "number" value = "1" /></td>
+				<td><input id = "ZWX7XxxQ" min = "0.00001" step = "0.001" type = "number" value = "0.005" /></td>
 			</tr>
 			<tr>
-				<td><button id = "xI2sfRms">データを表示する</button></td>
+				<td>グラフ下限</td>
+				<td><input id = "jGaOPogr" min = "0" step = "0.001" type = "number" value = "78.97" /></td>
+			</tr>
+			<tr>
+				<td>切り捨て桁</td>
+				<td><input id = "hAHihR4z" min = "0" type = "number" value = "2" /></td>
+			</tr>
+			<tr>
+				<td><button id = "xI2sfRms" show>データを表示しない</button></td>
 				<td><button id = "cTVruYhe">グラフをダウンロードする</button></td>
 			</tr>
 		</table>

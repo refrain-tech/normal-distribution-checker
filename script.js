@@ -102,7 +102,7 @@ const ai_map = [
 	[0.3751, 0.2574, 0.2260, 0.2032, 0.1847, 0.1691, 0.1554, 0.1430, 0.1317, 0.1212, 0.1113, 0.1020, 0.0932, 0.0846, 0.0764, 0.0685, 0.0608, 0.0532, 0.0459, 0.0386, 0.0314, 0.0244, 0.0174, 0.0104, 0.0035]
 ];
 const context = graph.getContext("2d");
-const fontSize = 25;
+const fontSize = 20;
 Math.average = function(...args) {
 	const filtered = args.filter(element => isNumber(element));
 	return Math.sum.apply(null, filtered) / filtered.length;
@@ -202,9 +202,9 @@ function main(event) {
 	context.strokeStyle = "black";
 	graph.drawSquare(0, 0, width, height);
 	const label_span = parseFloat(ZWX7XxxQ.value);
+	const lower = parseFloat(jGaOPogr.value);
 	const label_position = label_span / 2;
 	const histogram_height = height - 50;
-	const μ_position = μ - μ % label_span + label_span;
 	const array = [];
 	elements.forEach(currentValue => {
 		const index = Math.floor(currentValue / label_span);
@@ -212,16 +212,17 @@ function main(event) {
 			array[index] = [];
 		array[index].push(currentValue);
 	});
-	const x_scale = width / (μ_position * 2);
+	const maximum_position = Math.max(maximum, usl) - lower + label_span;
+	const x_scale = width / maximum_position;
 	const y_scale = histogram_height / Math.max.apply(null, array.filter(currentValue => currentValue).map(currentValue => currentValue.length));
 	const f_scale = histogram_height / f(μ);
 	context.fillStyle = "rgb(0, 127, 255)";
-	array.forEach((currentValue, index) => graph.drawSquare((index * label_span + label_span / 5) * x_scale, 0, (label_span * 3 / 5) * x_scale, currentValue.length * y_scale, true));
-	for (let x = 0; x <= μ_position * 2; x += label_span)
+	array.forEach((currentValue, index) => graph.drawSquare((index * label_span - lower + label_span / 5) * x_scale, 0, (label_span * 3 / 5) * x_scale, currentValue.length * y_scale, true));
+	for (let x = 0; x <= maximum_position; x += label_span)
 		graph.drawLine(x * x_scale, 0, x * x_scale, fontSize);
-	for (let t = 0; t <= width / x_scale; t += μ / 100) {
-		const t2 = t + μ / 100;
-		graph.drawLine(t * x_scale, f(t - label_position) * f_scale, t2 * x_scale, f(t2 - label_position) * f_scale);
+	for (let t = 0; t <= width; t++) {
+		const t2 = t + 1;
+		graph.drawLine(t, f(t / x_scale - label_position + lower) * f_scale, t2, f(t2 / x_scale - label_position + lower) * f_scale);
 	}
 	let x;
 	let y = histogram_height - fontSize;
@@ -229,40 +230,40 @@ function main(event) {
 	context.font = `${fontSize}px monospace`;
 	context.textAlign = "center";
 	if (isNumber(lsl)) {
-		x = (lsl + label_position) * x_scale;
+		x = (lsl + label_position - lower) * x_scale;
 		context.fillStyle = "blue";
 		context.strokeStyle = "blue";
 		graph.drawLine(x, 0, x, y);
 		context.fillText("LSL", x, ty);
 	}
 	if (isNumber(usl)) {
-		x = (usl + label_position) * x_scale;
+		x = (usl + label_position - lower) * x_scale;
 		context.fillStyle = "red";
 		context.strokeStyle = "red";
 		graph.drawLine(x, 0, x, y);
 		context.fillText("USL", x, ty);
 	}
-	x = (μ + label_position) * x_scale;
+	x = (μ + label_position - lower) * x_scale;
 	context.fillStyle = "green";
 	context.strokeStyle = "green";
 	graph.drawLine(x, 0, x, y);
 	context.fillText("μ",  x, ty);
-	x = (μ - 3 * σ + label_position) * x_scale;
+	x = (μ - 3 * σ + label_position - lower) * x_scale;
 	y = histogram_height / 2 - fontSize;
 	context.fillStyle = "purple";
 	context.strokeStyle = "purple";
 	graph.drawLine(x, 0, x, y);
 	context.fillText("-3σ", x, histogram_height / 2 + ty);
-	x = (μ + 3 * σ + label_position) * x_scale;
+	x = (μ + 3 * σ + label_position - lower) * x_scale;
 	context.fillStyle = "orange";
 	context.strokeStyle = "orange";
 	graph.drawLine(x, 0, x, y);
 	context.fillText("+3σ", x, histogram_height / 2 + ty);
 	context.strokeStyle = "black";
-	graph.drawSquare((Q1 + label_position) * x_scale, histogram_height, QD * x_scale, 50);
-	const min_x = (minimum + label_position) * x_scale;
-	const χ_x = (χ + label_position) * x_scale;
-	const max_x = (maximum + label_position) * x_scale;
+	graph.drawSquare((Q1 + label_position - lower) * x_scale, histogram_height, QD * x_scale, 50);
+	const min_x = (minimum + label_position - lower) * x_scale;
+	const χ_x = (χ + label_position - lower) * x_scale;
+	const max_x = (maximum + label_position - lower) * x_scale;
 	graph.drawLines([
 		{startX: min_x, startY: histogram_height, endX: min_x, endY: height},
 		{startX: χ_x, startY: histogram_height, endX: χ_x, endY: height},
@@ -276,35 +277,38 @@ function main(event) {
 			xI2sfRms.textContent = "データを表示する";
 		} else {
 			xI2sfRms.setAttribute("show", "");
-			xI2sfRms.textContent = "データを非表示にする";
+			xI2sfRms.textContent = "データを表示しない";
 		}
 		DATA_SHOW = !DATA_SHOW;
 	}
 	context.fillStyle = "black";
 	context.textAlign = "start";
 	result.innerHTML = "";
+	const digit = parseInt(hAHihR4z.value);
 	const data = [
 		["項目", "記号", "値"],
-		["データ数", "n", n.toFixed(2)],
-		["平均値", "μ",  μ.toFixed(2)],
-		["最小値", "min", minimum.toFixed(2)],
-		["最大値", "max", maximum.toFixed(2)],
-		["中央値", "χ", χ.toFixed(2)],
-		["第一四分位数", "Q1", Q1.toFixed(2)],
-		["第三四分位数", "Q3", Q3.toFixed(2)],
-		["四分位偏差", "Qσ", Qσ.toFixed(2)],
-		["平方和", "S", S.toFixed(2)],
-		["分散", "V", V.toFixed(2)],
-		["標準偏差", "σ", σ.toFixed(2)],
-		["下限規格", "LSL", isNumber(lsl) ? lsl.toFixed(2) : "-"],
-		["上限規格", "USL", isNumber(usl) ? usl.toFixed(2) : "-"],
-		["工程能力", "Cp", isNumber(cp) ? cp.toFixed(2) : "-"],
-		["工程能力(下側規格)", "Cpl", isNumber(cpl) ? cpl.toFixed(2) : "-"],
-		["工程能力(上側規格)", "Cpu", isNumber(cpu) ? cpu.toFixed(2) : "-"],
-		["工程能力", "Cpk", isNumber(cpk) ? cpk.toFixed(2) : "-"],
-		["歪度", "γ1", γ1.toFixed(2)],
-		["尖度", "γ2", γ2.toFixed(2)],
-		["シャピロ-ウィルク検定", "W", W.toFixed(2)]
+		["データ数", "n", n.toFixed(digit)],
+		["平均値", "μ",  μ.toFixed(digit)],
+		["最小値", "min", minimum.toFixed(digit)],
+		["最大値", "max", maximum.toFixed(digit)],
+		["中央値", "χ", χ.toFixed(digit)],
+		["第一四分位数", "Q1", Q1.toFixed(digit)],
+		["第三四分位数", "Q3", Q3.toFixed(digit)],
+		["四分位偏差", "Qσ", Qσ.toFixed(digit)],
+		["平方和", "S", S.toFixed(digit)],
+		["分散", "V", V.toFixed(digit)],
+		["標準偏差", "σ", σ.toFixed(digit)],
+		["平均+3σ", "μ+3σ", (μ + 3 * σ).toFixed(digit)],
+		["平均-3σ", "μ-3σ", (μ - 3 * σ).toFixed(digit)],
+		["下限規格", "LSL", isNumber(lsl) ? lsl.toFixed(digit) : "-"],
+		["上限規格", "USL", isNumber(usl) ? usl.toFixed(digit) : "-"],
+		["工程能力", "Cp", isNumber(cp) ? cp.toFixed(digit) : "-"],
+		["工程能力(下側規格)", "Cpl", isNumber(cpl) ? cpl.toFixed(digit) : "-"],
+		["工程能力(上側規格)", "Cpu", isNumber(cpu) ? cpu.toFixed(digit) : "-"],
+		["工程能力", "Cpk", isNumber(cpk) ? cpk.toFixed(digit) : "-"],
+		["歪度", "γ1", γ1.toFixed(digit)],
+		["尖度", "γ2", γ2.toFixed(digit)],
+		["シャピロ-ウィルク検定", "W", W.toFixed(digit)]
 	];
 	const length = [
 		Math.max.apply(null, data.map(currentValue => currentValue[1].length)),
@@ -312,7 +316,7 @@ function main(event) {
 	];
 	data.forEach((currentValue, index) => {
 		if (index > 0 && DATA_SHOW)
-			context.fillText(`${currentValue[1]}${" ".repeat(length[0] - currentValue[1].length)} = ${" ".repeat(length[1] - currentValue[2].length) + currentValue[2]}`, fontSize, fontSize * (index + 1));
+			context.fillText(`${currentValue[1]}${" ".repeat(length[0] - currentValue[1].length)} = ${" ".repeat(length[1] - currentValue[2].length) + currentValue[2]}`, fontSize, fontSize * (index+ 1));
 		const tag = index ? "td" : "th";
 		result.innerHTML += `<tr>
 	<${tag}>${currentValue[0]}</${tag}>
@@ -326,6 +330,8 @@ o0wW1dZt.addEventListener("change", main, false);
 LkpAPpSF.addEventListener("change", main, false);
 uSVk70ah.addEventListener("change", main, false);
 ZWX7XxxQ.addEventListener("change", main, false);
+jGaOPogr.addEventListener("change", main, false);
+hAHihR4z.addEventListener("change", main, false);
 xI2sfRms.addEventListener("click", main, false);
 cTVruYhe.addEventListener("click", event => {
 	const a = document.createElement("a");
