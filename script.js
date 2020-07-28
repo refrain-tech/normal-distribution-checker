@@ -103,20 +103,6 @@ const ai_map = [
 ];
 const context = graph.getContext("2d");
 const fontSize = 20;
-Math.average = function(...args) {
-	const filtered = args.filter(element => isNumber(element));
-	return Math.sum.apply(null, filtered) / filtered.length;
-};
-Math.median = function(...args) {
-	const filtered = args.filter(element => isNumber(element));
-	const index = Math.floor(filtered.length / 2);
-	return filtered.length % 2 ? filtered[index] : (filtered[index - 1] + filtered[index]) / 2;
-};
-Math.sum = function(...args) {
-	const filtered = args.filter(element => isNumber(element));
-	return filtered.reduce((accumulator, currentValue) => accumulator + currentValue);
-};
-const isNumber = window.isNumber = value => typeof value === "number" && isFinite(value);
 /*
  * 1. 入力フォームのデータを取得・変換する
  * 2. 数値を算出する
