@@ -146,7 +146,10 @@ function main (event) {
    * 4. 小数に変換
    * 5. 小さい順にソート
    */
-  const elements = o0wW1dZt.value.replace(/\s/g, '').split(',').filter(isNumber).map(parseFloat).sort();
+  const elements = o0wW1dZt.value.replace(/\s/g, '')
+                                 .split(',')
+                                 .filter(currentValue => isNumber(Number(currentValue)))
+                                 .map(parseFloat).sort();
   const n = elements.length;
   if (n < 2 || n > 50) return;
   const μ = Math.average.apply(null, elements);
@@ -158,7 +161,7 @@ function main (event) {
   const Q1 = Math.median.apply(null, elements.slice(0, centerIndex));
   const Q3 = Math.median.apply(null, elements.slice(centerIndex + n % 2, n));
   const QD = Q3 - Q1;
-  const Qσ = QD/ 2;
+  const Qσ = QD / 2;
   const S = Math.sum.apply(null, elements.map(currentValue => (currentValue - μ) ** 2));
   const V = S / (n - 1);
   const σ = V ** 0.5;
