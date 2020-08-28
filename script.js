@@ -24,11 +24,7 @@ class HTMLGraphElement extends HTMLCanvasElement {
     context.stroke();
   }
   drawLines (positions) {
-    let startX, startY, endX, endY;
-    positions.forEach(position => {
-      { startX, startY, endX, endY } = position;
-      this.drawLine(startX, startY, endX, endY);
-    });
+    positions.forEach(({ startX, startY, endX, endY }) =>  this.drawLine(startX, startY, endX, endY));
   }
   draw (positions, fill = false) {
     const context = this.getContext('2d');
