@@ -148,7 +148,7 @@ function main (event) {
    */
   const elements = o0wW1dZt.value.replace(/\s/g, '')
                                  .split(',')
-                                 .filter(value => !isNaN(value)))
+                                 .filter(value => !isNaN(value))
                                  .map(parseFloat)
                                  .sort();
   const n = elements.length;
