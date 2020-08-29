@@ -148,21 +148,21 @@ function main (event) {
    */
   const elements = o0wW1dZt.value.replace(/\s/g, '')
                                  .split(',')
-                                 .filter(currentValue => isNumber(Number(currentValue)))
-                                 .map(parseFloat).sort();
+                                 .filter(value => !isNaN(value)))
+                                 .map(parseFloat)
+                                 .sort();
   const n = elements.length;
   if (n < 2 || n > 50) return;
   const μ = Math.average.apply(null, elements);
   const minimum = Math.min.apply(null, elements);
   const maximum = Math.max.apply(null, elements);
   const χ = Math.median.apply(null, elements);
-  // データの中央値の順番
   const centerIndex = Math.floor(n / 2);
   const Q1 = Math.median.apply(null, elements.slice(0, centerIndex));
   const Q3 = Math.median.apply(null, elements.slice(centerIndex + n % 2, n));
   const QD = Q3 - Q1;
   const Qσ = QD / 2;
-  const S = Math.sum.apply(null, elements.map(currentValue => (currentValue - μ) ** 2));
+  const S = Math.sum.apply(null, elements.map(value => (value - μ) ** 2));
   const V = S / (n - 1);
   const σ = V ** 0.5;
   // 規格上下限値
@@ -175,9 +175,11 @@ function main (event) {
   const cpu = (usl - μ) / (3 * σ);
   const k = Math.abs((usl + lsl) / 2 - μ) / (ltu / 2);
   const cpk = cp * (1 - k);
-  const γ1 = Math.sum.apply(null, elements.map(currentValue => ((currentValue - μ) ** 3) / (n * σ ** 3)));
-  const γ2 = Math.sum.apply(null, elements.map(currentValue => ((currentValue - μ) ** 4) / (n * σ ** 4)));
-  const W = elements.filter((element, index) => index < centerIndex).map((currentValue, index) => elements[n - 1 - index] - currentValue).reduce((accumulator, currentValue, currentIndex) => accumulator + ai_map[n - 2][currentIndex] * currentValue, 0) ** 2 / S;
+  const γ1 = Math.sum.apply(null, elements.map(value => ((value - μ) ** 3) / (n * σ ** 3)));
+  const γ2 = Math.sum.apply(null, elements.map(value => ((value - μ) ** 4) / (n * σ ** 4)));
+  const W = elements.filter((_, index) => index < centerIndex)
+                    .map((value, index) => elements[n - 1 - index] - value)
+                    .reduce((accumulator, value, index) => accumulator + ai_map[n - 2][index] * value, 0) ** 2 / S;
   const f = t => Math.exp(-1 * ((t - μ) ** 2) / (2 * σ ** 2)) / (Math.sqrt(2 * Math.PI) * σ);
   const { height, width } = graph;
   // 幅・高さを変えてリセットする
@@ -192,17 +194,17 @@ function main (event) {
   const label_position = label_span / 2;
   const histogram_height = height - 50;
   const array = [ ];
-  elements.forEach(currentValue => {
-    const index = Math.floor(currentValue / label_span);
-    if (!array[index]) array[index] = [ ];
-    array[index].push(currentValue);
+  elements.forEach(value => {
+    const index = Math.floor(value / label_span);
+    array[index] = array[index] || [ ];
+    array[index].push(value);
   });
   const maximum_position = Math.max(maximum, usl) - lower + label_span;
   const x_scale = width / maximum_position;
-  const y_scale = histogram_height / Math.max.apply(null, array.filter(currentValue => currentValue).map(currentValue => currentValue.length));
+  const y_scale = histogram_height / Math.max.apply(null, array.filter(value => value).map(value => value.length));
   const f_scale = histogram_height / f(μ);
   context.fillStyle = 'rgb(0, 127, 255)';
-  array.forEach((currentValue, index) => graph.drawSquare((index * label_span - lower + label_span / 5) * x_scale, 0, (label_span * 3 / 5) * x_scale, currentValue.length * y_scale, true));
+  array.forEach((value, index) => graph.drawSquare((index * label_span - lower + label_span / 5) * x_scale, 0, (label_span * 3 / 5) * x_scale, value.length * y_scale, true));
   for (let x = 0; x <= maximum_position; x += label_span) graph.drawLine(x * x_scale, 0, x * x_scale, fontSize);
   let  t2;
   for (let t = 0; t <= width; t++) {
@@ -256,7 +258,7 @@ function main (event) {
     { startX: min_x, startY: histogram_height + 25, endX: max_x, endY: histogram_height + 25 }
   ]);
   let DATA_SHOW = xI2sfRms.hasAttribute('show');
-  if (event.target === xI2sfRms) {
+  if (this === xI2sfRms) {
     if (DATA_SHOW) {
       xI2sfRms.removeAttribute('show');
       xI2sfRms.textContent = 'データを表示する';
@@ -296,18 +298,14 @@ function main (event) {
     [ 'シャピロ-ウィルク検定', 'W', W.toFixed(digit) ]
   ];
   const length = [
-    Math.max.apply(null, data.map(currentValue => currentValue[1].length)),
-    Math.max.apply(null, data.map(currentValue => currentValue[2].length))
+    Math.max.apply(null, data.map(value => value[1].length)),
+    Math.max.apply(null, data.map(value => value[2].length))
   ];
   let tag;
-  data.forEach((currentValue, index) => {
-    if (index > 0 && DATA_SHOW) context.fillText(`${currentValue[1]}${' '.repeat(length[0] - currentValue[1].length)} = ${' '.repeat(length[1] - currentValue[2].length) + currentValue[2]}`, fontSize, fontSize * (index+ 1));
+  data.forEach((value, index) => {
+    if (index > 0 && DATA_SHOW) context.fillText(`${value[1]}${' '.repeat(length[0] - value[1].length)} = ${' '.repeat(length[1] - value[2].length) + value[2]}`, fontSize, fontSize * (index+ 1));
     tag = index ? 'td' : 'th';
-    result.innerHTML += `<tr>
-  <${tag}>${currentValue[0]}</${tag}>
-  <${tag} align = 'center'>${currentValue[1]}</${tag}>
-  <${tag} ${index ? 'align = \'right\'' : ''}>${currentValue[2]}</${tag}>
-</tr>`;
+    result.innerHTML += `<tr><${tag}>${value[0]}</${tag}><${tag} align = 'center'>${value[1]}</${tag}><${tag} ${index ? 'align = \'right\'' : ''}>${value[2]}</${tag}></tr>`;
   });
 }
 window.addEventListener('load', main, false);
